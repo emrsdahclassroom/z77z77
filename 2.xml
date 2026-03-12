@@ -190,7 +190,7 @@
                 v_sdk_init = true;
 
                 let unityLoader = document.createElement("script");
-                unityLoader.src = "https://cdn.jsdelivr.net/gh/emrsdahclassroom/z77z77@main/Build/Build/Build.loader.js";
+                unityLoader.src = "https://cdn.jsdelivr.net/gh/emrsdahclassroom/z77z77@main/Build/Build.loader.js";
                 unityLoader.onload = () => {
                     createUnityInstance(canvas, config, (progress) => {
                         progressBarFull.style.width = `${progress * 100}%`;
