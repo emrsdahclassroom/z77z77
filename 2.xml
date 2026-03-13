@@ -10,6 +10,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Extreme Battlegrounds</title>
     <style>
         html, body {
             width: 100%;
@@ -57,19 +58,23 @@
             background: #007EBD;
         }
     </style>
-    <!-- YSDK Hatalarını Tamamen Çözen Gelişmiş Mock Objesi -->
+
+    <!-- YSDK Hatalarını ve Liderlik Tablosu Sorununu Çözen Mock Objesi -->
     <script>
         if (typeof YaGames === 'undefined') {
             window.YaGames = {
                 init: function() {
                     return new Promise((resolve) => {
-                        console.log("Full Mock SDK initialized (Player Auth fixed)");
-                        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                        console.log("SDK Mock: Liderlik Tablosu ve Masaüstü Modu Aktif");
+                        
+                        // Masaüstü modunu zorla
+                        const isMobile = false; 
+
                         resolve({
                             deviceInfo: {
-                                type: isMobile ? 'mobile' : 'desktop',
-                                isMobile: function() { return isMobile; },
-                                isDesktop: function() { return !isMobile; },
+                                type: 'desktop',
+                                isMobile: function() { return false; },
+                                isDesktop: function() { return true; },
                                 isTablet: function() { return false; },
                                 isTV: function() { return false; }
                             },
@@ -90,13 +95,19 @@
                                 getName: () => "Player",
                                 getUniqueID: () => "123",
                                 getPhoto: () => "",
-                                // Hata alınan yer burası: isAuthorized eklendi
                                 isAuthorized: function() { return true; },
                                 getMode: () => "lite",
                                 setData: () => Promise.resolve(),
                                 getData: () => Promise.resolve({}),
                                 setStats: () => Promise.resolve(),
                                 getStats: () => Promise.resolve({})
+                            }),
+                            // Hata alınan 'setScore' sorununu çözen Leaderboards Mock yapısı
+                            getLeaderboards: () => Promise.resolve({
+                                getLeaderboardDescription: () => Promise.resolve({ title: "Leaderboard" }),
+                                getLeaderboardPlayerEntry: () => Promise.resolve({ score: 0 }),
+                                getLeaderboardEntries: () => Promise.resolve({ entries: [] }),
+                                setScore: () => Promise.resolve() // Kritik: setScore fonksiyonu
                             }),
                             getStorage: () => Promise.resolve({
                                 getItem: () => null,
@@ -129,13 +140,6 @@
             productName: "Extreme Battlegrounds",
             productVersion: "0.0.0.4"
         };
-
-        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-            let meta = document.createElement('meta');
-            meta.name = 'viewport';
-            meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-            document.getElementsByTagName('head')[0].appendChild(meta);
-        }
 
         let canvas = document.getElementById('canvas');
         let loadingCover = document.getElementById('loading-cover');
@@ -201,11 +205,7 @@
                     }).catch(console.error);
                 };
                 document.body.appendChild(unityLoader);
-            }).catch(() => {
-                let loader = document.createElement("script");
-                loader.src = "Build/Build.loader.js";
-                document.body.appendChild(loader);
-            });
+            }).catch(console.error);
         });
     </script>
 
